@@ -59,6 +59,10 @@ export default class Game extends Phaser.Scene {
   this.physics.add.collider(this.personaje, this.recolectables)
   this.physics.add.collider(this.recolectables, this.recolectables)
 
+  this.physics.add.collider(this.personaje, this.recolectables, this.pj, null, this)
+  
+  this.physics.add.overlap(this.platforms, this.recolectables, this.floor, null, this)
+
   //crear recolectables
 
   //evento 1 segundo
@@ -69,6 +73,14 @@ export default class Game extends Phaser.Scene {
     loop: true,
   });
 }
+
+pj(personaje, recolectables){
+  recolectables.destroy();
+  }
+
+floor(platforms, recolectables){
+  recolectables.disableBody(true,true)
+  }
 
   onSecond() {
     //crear reecolectable

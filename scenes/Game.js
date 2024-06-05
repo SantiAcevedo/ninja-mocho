@@ -7,12 +7,13 @@ export default class Game extends Phaser.Scene {
 
   init() {
     this.gameOver = false;
-    this.timer = 10;
+    this.timer = 30;
     this.score = 0;
     this.shapes = {
       "triangle": {point: 10, count: 0},
       "square": {point: 20, count: 0},
-      "diamond": {point: 30, count:0}
+      "diamond": {point: 30, count:0},
+      "bomb": {point: -10, count: 0}
     }
   }
 
@@ -32,6 +33,7 @@ export default class Game extends Phaser.Scene {
     this.load.image("triangle", "../public/assets/triangle.png")
     this.load.image("square", "../public/assets/square.png")
     this.load.image("diamond", "../public/assets/diamond.png")
+    this.load.image("bomb", "../public/assets/bomb.webp")
 
     
 }
@@ -43,6 +45,8 @@ export default class Game extends Phaser.Scene {
 
   //Crear pltaforma
   this.platforms = this.physics.add.staticGroup();
+
+
 
   //al grupo de plataformas agregar plataforma
   this.platforms.create(400, 565, "platform").setScale(2).refreshBody();
@@ -70,6 +74,9 @@ export default class Game extends Phaser.Scene {
   this.physics.add.collider(this.personaje, this.recolectables, this.pj, null, this)
   
   this.physics.add.overlap(this.platforms, this.recolectables, this.floor, null, this)
+
+  // Configurar evento de colisión para bounce
+  this.physics.add.collider(this.platforms, this.recolectables, this.onRecolectableBounced, null, this);
 
   //add tecla r
   this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -110,8 +117,8 @@ export default class Game extends Phaser.Scene {
 
 pj(personaje, recolectables){
   const nombreFig = recolectables.texture.key;
-  const puntoFig = this.shapes[nombreFig].point;
-  this.score += puntoFig;
+  //const puntoFig = this.shapes[nombreFig].point;
+  this.score += recolectables.getData("points");
   this.shapes[nombreFig].count += 1;
   console.table(this.shapes);
   console.log("score", this.score);
@@ -137,14 +144,12 @@ pj(personaje, recolectables){
   }
 }
 
-floor(platforms, recolectables){
-  recolectables.disableBody(true,true)
-  }
 
   onSecond() {
+
     //crear reecolectable
 
-    const tipos = ["triangle", "square", "diamond"]
+    const tipos = ["triangle", "square", "diamond", "bomb"]
     const tipo = Phaser.Math.RND.pick(tipos);
 
     let recolectable = this.recolectables.create(
@@ -152,10 +157,20 @@ floor(platforms, recolectables){
       0,
       tipo
     );
-    recolectable.setVelocity(0, 100);
-    this.physics.add.collider(recolectable, this.recolectables)
-  }
 
+    if(tipo=="bomb"){
+      recolectable.setScale(0.1)
+    }
+    recolectable.setVelocity(0, 100); 
+
+    this.physics.add.collider(recolectable, this.recolectables)
+
+    //asignar rebote
+        const rebote = Phaser.Math.FloatBetween(0.4, 0.8);
+        recolectable.setBounceY(rebote);
+    //set data
+      recolectable.setData("points",this.shapes[tipo].point);
+  } 
   handlerTimer() {
     this.timer -= 1;
     this.timerText.setText(`tiempo restante: ${this.timer}`);
@@ -163,8 +178,7 @@ floor(platforms, recolectables){
       this.gameOver = true;
     }
   }
-
-  
+ 
   update() {
     if (this.gameOver) { 
       // this.scene.pause();
@@ -185,6 +199,17 @@ floor(platforms, recolectables){
 
     if (this.cursor.up.isDown && this.personaje.body.touching.down) {
       this.personaje.setVelocityY(-330)
+    }
+  }
+  
+  onRecolectableBounced(platforms, recolectable) {
+    console.log("recolectable rebote",recolectable);
+    let points = recolectable.getData("points");
+    points -= 5;
+    console.log(points)
+    recolectable.setData("points", points);
+    if (points <= 0) {
+      recolectable.destroy();
     }
   }
 

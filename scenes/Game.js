@@ -21,19 +21,19 @@ export default class Game extends Phaser.Scene {
   //cargar assets
 
   //import Cielo
-    this.load.image("Cielo", "./public/assets/Cielo.webp");
+    this.load.image("Cielo", "./public/assets/bosque.avif");
 
     //import plataforma
     this.load.image("platform", "./public/assets/platform.png");
 
     //import pj
-    this.load.image("personaje", "./public/assets/Ninja.png")
+    this.load.image("personaje", "./public/assets/conejo.webp")
 
     //import recolectable
-    this.load.image("triangle", "./public/assets/triangle.png")
-    this.load.image("square", "./public/assets/square.png")
-    this.load.image("diamond", "./public/assets/diamond.png")
-    this.load.image("bomb", "./public/assets/bomb.webp")
+    this.load.image("triangle", "./public/assets/zanahoria.png")
+    this.load.image("square", "./public/assets/lechuga.png")
+    this.load.image("diamond", "./public/assets/fresa.png")
+    this.load.image("bomb", "./public/assets/hongo.png")
 
     
 }
@@ -41,7 +41,7 @@ export default class Game extends Phaser.Scene {
   //Crear elemnto
 
   this.Cielo = this.add.image(400, 300, "Cielo");
-  this.Cielo.setScale(2)
+  this.Cielo.setScale(1.7)
 
   //Crear pltaforma
   this.platforms = this.physics.add.staticGroup();
@@ -52,10 +52,11 @@ export default class Game extends Phaser.Scene {
   this.platforms.create(400, 565, "platform").setScale(2).refreshBody();
 
   this.platforms.create(200, 400, "platform")
+  this.platforms.create(700, 250, "platform")
 
   //Crear pj
   this.personaje = this.physics.add.sprite(400, 300, "personaje")
-  this.personaje.setScale(0.1);
+  this.personaje.setScale(0.2);
   this.personaje.setCollideWorldBounds(true);
 
   //agregar colision entre pj y plataforma
@@ -109,9 +110,9 @@ export default class Game extends Phaser.Scene {
   })
 
   this.scoreText = this.add.text(10, 50, `puntaje: ${this.score}
-  / T: ${this.shapes["triangle"].count}
-  / S: ${this.shapes["square"].count}
-  / D: ${this.shapes["diamond"].count}`)
+  / Z: ${this.shapes["triangle"].count}
+  / L: ${this.shapes["square"].count}
+  / F: ${this.shapes["diamond"].count}`)
 
 }
 
@@ -127,9 +128,9 @@ pj(personaje, recolectables){
 
   this.scoreText.setText(
     `puntaje: ${this.score}
-    / T: ${this.shapes["triangle"].count}
-    / S: ${this.shapes["square"].count}
-    / D: ${this.shapes["diamond"].count}`
+    / Z: ${this.shapes["triangle"].count}
+    / L: ${this.shapes["square"].count}
+    / F: ${this.shapes["diamond"].count}`
   );
 
   const cumplePuntos = this.score >= 100;
@@ -160,6 +161,15 @@ pj(personaje, recolectables){
 
     if(tipo=="bomb"){
       recolectable.setScale(0.1)
+    }
+    if(tipo=="triangle"){
+      recolectable.setScale(0.25)
+    }
+    if(tipo=="square"){
+      recolectable.setScale(0.25)
+    }
+    if(tipo=="diamond"){
+      recolectable.setScale(0.25)
     }
     recolectable.setVelocity(0, 100); 
 

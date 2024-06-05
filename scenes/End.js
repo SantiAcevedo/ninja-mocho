@@ -16,5 +16,14 @@ create() {
 
     this.add.text(400, 350, `Score: ${this.score}`);
 
+    this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+}
+update() {
+    if (this.r.isDown) {
+        this.scene.start("main");
+    }
 }
 }
+
+
+

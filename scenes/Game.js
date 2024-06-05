@@ -35,6 +35,9 @@ export default class Game extends Phaser.Scene {
     this.load.image("diamond", "./public/assets/fresa.png")
     this.load.image("bomb", "./public/assets/hongo.png")
 
+    //crear musica
+    this.load.audio('backmusic', ['./public/assets/musicafondo.mp3']);
+
     
 }
   create() {
@@ -46,7 +49,13 @@ export default class Game extends Phaser.Scene {
   //Crear pltaforma
   this.platforms = this.physics.add.staticGroup();
 
+  //verificar si la musica esta sonando
+  if (!this.backgroundMusic || !this.backgroundMusic.isPlaying) {
 
+      // Agregar música de fondo
+      this.backgroundMusic = this.sound.add('backmusic', { loop: true, volume: 0.2 });
+      this.backgroundMusic.play();
+  }
 
   //al grupo de plataformas agregar plataforma
   this.platforms.create(400, 565, "platform").setScale(2).refreshBody();
@@ -210,6 +219,18 @@ pj(personaje, recolectables){
     if (this.cursor.up.isDown && this.personaje.body.touching.down) {
       this.personaje.setVelocityY(-330)
     }
+
+        // Reiniciar la música al presionar la tecla "R"
+        if (Phaser.Input.Keyboard.JustDown(this.r)) {
+          // Detener la música actual
+          if (this.backgroundMusic) {
+              this.backgroundMusic.stop();
+          }
+  
+          // Volver a agregar y reproducir la música
+          this.backgroundMusic = this.sound.add('backmusic', { loop: true, volume: 0.2 });
+          this.backgroundMusic.play();
+      }
   }
   
   onRecolectableBounced(platforms, recolectable) {

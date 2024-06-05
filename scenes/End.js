@@ -19,10 +19,18 @@ create() {
     this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 }
 update() {
-    if (this.r.isDown) {
-        this.scene.start("main");
+        // Reiniciar el juego y la música al presionar la tecla "R"
+        if (Phaser.Input.Keyboard.JustDown(this.r)) {
+            // Reiniciar la música de fondo
+            if (this.scene.get("main").backgroundMusic.isPlaying) {
+                this.scene.get("main").backgroundMusic.stop();
+            }
+
+            // Reiniciar el juego
+            this.scene.stop("end");
+            this.scene.start("main");
+        }
     }
-}
 }
 
 
